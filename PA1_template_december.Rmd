@@ -1,0 +1,170 @@
+---
+title: "Peer Assessment 1"
+author: "Fernanda Guizar"
+date: "December 14, 2015"
+output: html_document
+---
+
+## Introduction
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+## Loading and preprocessing the data
+
+The data was taken from the URL specified in the following code, and then converted into a data frame. 
+
+```{r}
+File_URL<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(File_URL, destfile="Data.zip", mode="wb", method="curl")
+temp <- unzip("Data.zip", unzip="internal")
+Raw_data <- read.csv(temp, header=TRUE)
+Date1 <- as.Date(as.character(Raw_data$date))
+Steps1 <- as.numeric(Raw_data$steps)
+Interval1 <- as.numeric(Raw_data$interval)
+Rawdata_df <- data.frame(Date1, Interval1, Steps1)
+```
+
+## What is the mean total number of steps taken per day?
+
+1. Calculate  the total number of steps taken per day
+
+```{r}
+Step_counts <- aggregate(Steps1 ~ Date1, data= Rawdata_df,sum)
+Step_counts
+```
+
+2. Make a histogram of the total number of steps taken per day
+
+```{r}
+Counts1 <- as.numeric(Step_counts$Steps1)
+hist(Counts1,main="Hisogram of total number of steps taken per day")
+```
+
+3. Calculate and report the mean and median of the total number of steps taken per day. 
+
+This summary of the data contains the mean and the median of the total number of steps taken per day. 
+
+```{r}
+summary(Counts1)
+```
+
+## What is the average daily activity pattern?
+
+4. Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). 
+
+The data covers a total of 53 days. We use this information to calculate the average. 
+
+
+```{r}
+Interval_counts1 <- aggregate(Steps1 ~ Interval1, data= Rawdata_df, sum)
+Steps2 <- (as.numeric(Interval_counts1$Steps1))/53
+Interval2 <- as.numeric(Interval_counts1$Interval1)
+Interval_counts2 <- data.frame(Interval2, Steps2)
+plot.ts(Interval2, y= Steps2, type="l")
+```
+
+
+5. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```{r}
+Interval_counts2[which.max(Interval_counts2$Steps2),]
+```
+
+
+## Imputing missing values
+
+6. Calculate and report the total number of missing values in the dataset.
+
+```{r}
+sum(is.na(Raw_data$steps))
+```
+
+7. Devise a strategy for filling in all of the missing values in the dataset.
+
+The strategy is to convert the NAs to 0's, because there is no data. 
+
+```{r}
+Steps3 <- Raw_data$steps
+Steps3[is.na(Steps3)] <- 0
+```
+
+8. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r}
+Filled_indata_df <- data.frame(Date1, Interval1, Steps3)
+```
+
+9. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+Step_counts2 <- aggregate(Steps3 ~ Date1, data= Filled_indata_df,sum)
+Counts2 <- as.numeric(Step_counts2$Steps3)
+hist(Counts2,main="Hisogram of total number of steps taken per day")
+summary(Counts2)
+```
+
+These values differ from the estimates from the first part of the assignment. The impact is that the frequency of the observations with 0 steps per interval, increases; the mean and median total number of steps taken per day, decrease. 
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+10. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+```{r}
+library(timeDate)
+Rawdata_df$Week <- isWeekday(Rawdata_df$Date1)
+Rawdata_df$Week[Rawdata_df$Week=="TRUE"]<-"Weekday"
+Rawdata_df$Week[Rawdata_df$Week=="FALSE"]<-"Weekend"
+```
+
+11. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+
+First divide the data set into Weekdays and Weekends. 
+
+Weekdays
+
+```{r}
+Weekdays_df_1 <- Rawdata_df[which(Rawdata_df$Week=="Weekday"),]
+Weekdays_df_2 <- Weekdays_df_1[1:3]
+Weekdays_df_2$Steps1 <- as.numeric(Weekdays_df_2$Steps1)
+```
+
+Then, calculate the total number of steps per day. 
+
+```{r}
+Weekdays_step_counts <- aggregate(Steps1 ~ Date1, data= Weekdays_df_2,sum)
+Weekdays_step_counts
+```
+
+There are 39 weekdays. We use this information to calculate the average step per interval per day. 
+
+```{r}
+Interval_counts_Weekdays <- aggregate(Steps1 ~ Interval1, data= Weekdays_df_2, sum)
+Steps_weekdays <- (as.numeric(Interval_counts_Weekdays$Steps1))/39
+Interval_weekdays <- as.numeric(Interval_counts_Weekdays$Interval1)
+plot.ts(Interval_weekdays, y= Steps_weekdays, main="Weekdays Time Series Plot", type="l")
+```
+
+And for the Weekends, 
+
+```{r}
+Weekends_df_1 <- Rawdata_df[which(Rawdata_df$Week=="Weekend"),]
+Weekends_df_2 <- Weekends_df_1[1:3]
+Weekends_df_2$Steps1 <- as.numeric(Weekends_df_2$Steps1)
+```
+
+Then, calculate the total number of steps per day. 
+
+```{r}
+Weekends_step_counts <- aggregate(Steps1 ~ Date1, data= Weekends_df_2,sum)
+Weekends_step_counts
+```
+
+There are 14 weekends. We use this information to calculate the average step per interval per day. 
+
+```{r}
+Interval_counts_Weekends <- aggregate(Steps1 ~ Interval1, data= Weekends_df_2, sum)
+Steps_weekends <- (as.numeric(Interval_counts_Weekends$Steps1))/14
+Interval_weekends <- as.numeric(Interval_counts_Weekends$Interval1)
+plot.ts(Interval_weekends, y= Steps_weekends, main="Weekends Time Series Plot", type="l")
+```
