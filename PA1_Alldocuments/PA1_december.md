@@ -100,7 +100,7 @@ Counts1 <- as.numeric(Step_counts$Steps1)
 hist(Counts1,main="Hisogram of total number of steps taken per day")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-3](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-10-1.png) 
 
 3. Calculate and report the mean and median of the total number of steps taken per day. 
 
