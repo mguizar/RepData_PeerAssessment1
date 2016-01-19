@@ -13,6 +13,8 @@ This assignment makes use of data from a personal activity monitoring device. Th
 
 The data was taken from the URL specified in the following code, and then converted into a data frame. 
 
+The URL was provided within the instructions of the assignment. This way the file does not need to be downloaded and stored locally before running the code in R. 
+
 
 ```r
 File_URL<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -25,15 +27,19 @@ Interval1 <- as.numeric(Raw_data$interval)
 Rawdata_df <- data.frame(Date1, Interval1, Steps1)
 ```
 
+The data is sotred as a Data Frame called Rawdata_df. 
+
 ## What is the mean total number of steps taken per day?
 
 1. Calculate  the total number of steps taken per day
 
+We add up all of the steps taken per day with this section of code. 
 
 ```r
 Step_counts <- aggregate(Steps1 ~ Date1, data= Rawdata_df,sum)
 Step_counts
 ```
+Here we are showing a list of total stapes taken per day with the date (Date1) and the step count (Steps1)
 
 ```
 ##         Date1 Steps1
@@ -94,13 +100,14 @@ Step_counts
 
 2. Make a histogram of the total number of steps taken per day
 
+This is the code to calculate the histogram. 
 
 ```r
 Counts1 <- as.numeric(Step_counts$Steps1)
 hist(Counts1,main="Hisogram of total number of steps taken per day")
 ```
 
-![plot of chunk unnamed-chunk-3](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-10-1.png) 
+![plot of chunk unnamed-chunk-3](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-3-1.png) 
 
 3. Calculate and report the mean and median of the total number of steps taken per day. 
 
@@ -110,6 +117,13 @@ This summary of the data contains the mean and the median of the total number of
 ```r
 summary(Counts1)
 ```
+
+The results are: 
+
+Median: 10760
+Mean: 10770
+
+You can see other descriptive statistics here:
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -122,7 +136,7 @@ summary(Counts1)
 
 The data covers a total of 53 days. We use this information to calculate the average. 
 
-
+We use a 5 minute interval to calculate the average number of steps taken per day, averaged across all days. 
 
 ```r
 Interval_counts1 <- aggregate(Steps1 ~ Interval1, data= Rawdata_df, sum)
@@ -132,15 +146,17 @@ Interval_counts2 <- data.frame(Interval2, Steps2)
 plot.ts(Interval2, y= Steps2, type="l")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+![plot of chunk unnamed-chunk-5](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-5-1.png) 
 
 
 5. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
+With the following code we get the interval with the maximum number of steps during the day. 
 
 ```r
 Interval_counts2[which.max(Interval_counts2$Steps2),]
 ```
+The interval was: 835 with an average of 206.169 steps taken. 
 
 ```
 ##     Interval2   Steps2
@@ -152,10 +168,12 @@ Interval_counts2[which.max(Interval_counts2$Steps2),]
 
 6. Calculate and report the total number of missing values in the dataset.
 
+The missing values are reported as NA's 
 
 ```r
 sum(is.na(Raw_data$steps))
 ```
+There were a total of 2304 missing values in the dataset. 
 
 ```
 ## [1] 2304
@@ -163,7 +181,7 @@ sum(is.na(Raw_data$steps))
 
 7. Devise a strategy for filling in all of the missing values in the dataset.
 
-The strategy is to convert the NAs to 0's, because there is no data. 
+The strategy is to find all the NA's and fill them in with 0's. This will obviously decrease the average value of steps. 
 
 
 ```r
@@ -173,6 +191,7 @@ Steps3[is.na(Steps3)] <- 0
 
 8. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
+We create the new data frame with the missing data filled in. 
 
 ```r
 Filled_indata_df <- data.frame(Date1, Interval1, Steps3)
@@ -180,6 +199,7 @@ Filled_indata_df <- data.frame(Date1, Interval1, Steps3)
 
 9. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
+Making the histogram of the total number of steps as we did for the dataset without the missing values filled in. 
 
 ```r
 Step_counts2 <- aggregate(Steps3 ~ Date1, data= Filled_indata_df,sum)
@@ -187,11 +207,15 @@ Counts2 <- as.numeric(Step_counts2$Steps3)
 hist(Counts2,main="Hisogram of total number of steps taken per day")
 ```
 
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+
+![plot of chunk unnamed-chunk-10](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-10-1.png) 
 
 ```r
 summary(Counts2)
 ```
+The new descriptive values are: 
+Median: 10400
+Mean: 9354
 
 ```
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -287,7 +311,7 @@ Interval_weekdays <- as.numeric(Interval_counts_Weekdays$Interval1)
 plot.ts(Interval_weekdays, y= Steps_weekdays, main="Weekdays Time Series Plot", type="l")
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
+![plot of chunk unnamed-chunk-14](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-14-1.png) 
 
 And for the Weekends, 
 
@@ -334,6 +358,6 @@ Interval_weekends <- as.numeric(Interval_counts_Weekends$Interval1)
 plot.ts(Interval_weekends, y= Steps_weekends, main="Weekends Time Series Plot", type="l")
 ```
 
-![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png) 
+![plot of chunk unnamed-chunk-17](https://github.com/mguizar/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-17-1.png) 
 
 
